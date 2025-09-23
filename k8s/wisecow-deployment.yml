@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wisecow-deploy
+  namespace: wisecow-app 
+  labels:
+    app: wisecow
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wisecow
+  template:
+    metadata:
+      labels:
+        app: wisecow
+    spec:
+      containers:
+      - name: wisecow-cont
+        image: bharat183/wisecow:latest
+        ports:
+        - containerPort: 4499
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits: 
+            memory: "512Mi"
+            cpu: "500m"
+
+
+
