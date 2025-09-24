@@ -25,7 +25,7 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/wisecow-app:${{ github.run_number }}"
-          docker build -t $IMAGE_NAME ./wisecow-app
+          docker build -t $IMAGE_NAME .
 
       # Push Docker image to Docker Hub
       - name: Push Docker image
@@ -42,27 +42,24 @@ jobs:
 
       # Apply Namespace
       - name: Apply Namespace
-        run: kubectl apply -f wisecow-app/k8s/wisecow-namespace.yml
+        run: kubectl apply -f k8s/wisecow-namespace.yml
 
       # Apply Cert Manager Issuer (self-signed)
       - name: Apply Cert Manager
-        run: kubectl apply -f wisecow-app/k8s/selfsigned-clusterissuer.yml
+        run: kubectl apply -f k8s/selfsigned-clusterissuer.yml
 
       # Apply Service
       - name: Apply Service
-        run: kubectl apply -f wisecow-app/k8s/wisecow-service.yml
+        run: kubectl apply -f k8s/wisecow-service.yml
 
       # Deploy Application
       - name: Deploy Application
         run: |
-          # Apply deployment manifest if not exists
-          kubectl apply -f wisecow-app/k8s/wisecow-deploy.yml || true
-          # Update deployment image with new build number
+          kubectl apply -f k8s/wisecow-deploy.yml || true
           kubectl set image deployment/wisecow-deploy wisecow-cont=${{ secrets.DOCKER_USERNAME }}/wisecow-app:${{ github.run_number }} -n wisecow-app
-          # Wait until pod is ready
           kubectl rollout status deployment/wisecow-deploy -n wisecow-app
 
       # Apply Ingress
       - name: Apply Ingress
-        run: kubectl apply -f wisecow-app/k8s/wisecow-ingress.yml
+        run: kubectl apply -f k8s/wisecow-ingress.yml
 
