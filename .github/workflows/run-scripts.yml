@@ -33,16 +33,10 @@ jobs:
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/wisecow:${{ github.run_number }}"
           docker push $IMAGE_NAME
 
-      # Configure kubectl (safe)
+      # Configure kubectl
       - name: Configure kubectl
         run: |
-          mkdir -p $HOME/.kube
-          if [ -f /home/ubuntu/.kube/config ]; then
-            echo "Using existing kubeconfig"
             chmod 600 /home/ubuntu/.kube/config
-          else
-            echo "No kubeconfig found, skipping configuration"
-          fi
 
       # Apply Namespace
       - name: Apply Namespace
