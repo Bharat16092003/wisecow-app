@@ -24,13 +24,13 @@ jobs:
       # Build Docker image with incremental build number
       - name: Build Docker image
         run: |
-          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/wisecow-app:${{ github.run_number }}"
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/wisecow:${{ github.run_number }}"
           docker build -t $IMAGE_NAME .
 
       # Push Docker image to Docker Hub
       - name: Push Docker image
         run: |
-          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/wisecow-app:${{ github.run_number }}"
+          IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/wisecow:${{ github.run_number }}"
           docker push $IMAGE_NAME
 
       # Configure kubectl
@@ -55,8 +55,11 @@ jobs:
       # Deploy Application
       - name: Deploy Application
         run: |
+          # Apply deployment manifest if not exists
           kubectl apply -f k8s/wisecow-deploy.yml || true
-          kubectl set image deployment/wisecow-deploy wisecow-cont=${{ secrets.DOCKER_USERNAME }}/wisecow-app:${{ github.run_number }} -n wisecow-app
+          # Update deployment image with new build number
+          kubectl set image deployment/wisecow-deploy wisecow-cont=${{ secrets.DOCKER_USERNAME }}/wisecow:${{ github.run_number }} -n wisecow-app
+          # Wait until pod is ready
           kubectl rollout status deployment/wisecow-deploy -n wisecow-app
 
       # Apply Ingress
