@@ -33,12 +33,9 @@ jobs:
           IMAGE_NAME="${{ secrets.DOCKER_USERNAME }}/wisecow:${{ github.run_number }}"
           docker push $IMAGE_NAME
 
-      # Configure kubectl
+      # Configure kubectl (fix: just set permissions, no copy)
       - name: Configure kubectl
-        run: |
-          mkdir -p $HOME/.kube
-          cp /home/ubuntu/.kube/config $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
+        run: chmod 600 $HOME/.kube/config
 
       # Apply Namespace
       - name: Apply Namespace
@@ -55,11 +52,8 @@ jobs:
       # Deploy Application
       - name: Deploy Application
         run: |
-          # Apply deployment manifest if not exists
           kubectl apply -f k8s/wisecow-deploy.yml || true
-          # Update deployment image with new build number
           kubectl set image deployment/wisecow-deploy wisecow-cont=${{ secrets.DOCKER_USERNAME }}/wisecow:${{ github.run_number }} -n wisecow-app
-          # Wait until pod is ready
           kubectl rollout status deployment/wisecow-deploy -n wisecow-app
 
       # Apply Ingress
