@@ -53,9 +53,9 @@ jobs:
       # Deploy Application
       - name: Deploy Application
         run: |
-          kubectl apply -f k8s/wisecow-deployment.yml || true
-          kubectl set image deployment/wisecow-deployment wisecow-cont=${{ secrets.DOCKER_USERNAME }}/wisecow:${{ github.run_number }} -n wisecow-app
-          kubectl rollout status deployment/wisecow-deployment -n wisecow-app
+           kubectl apply -f k8s/wisecow-deployment.yml || true
+           kubectl set image deployment/wisecow-deploy wisecow-cont=${{ secrets.DOCKER_USERNAME }}/wisecow:${{ github.run_number }} -n wisecow-app
+           kubectl rollout status deployment/wisecow-deploy -n wisecow-app
 
       # Apply Ingress
       - name: Apply Ingress
