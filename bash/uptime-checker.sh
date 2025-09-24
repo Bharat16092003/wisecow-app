@@ -1,6 +1,6 @@
 #! /bin/bash
 
-URL="https://example.com"
+URL="https://google.com"
 LOG="/var/log/app_uptome.log"
 DATE=$(date +"%Y-%m-%d %H:%M:%S")
 
